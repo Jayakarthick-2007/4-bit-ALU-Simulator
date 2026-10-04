@@ -93,4 +93,15 @@ This project demonstrates the working principles of an Arithmetic Logic Unit usi
 |     2 | **SIVAGURU N**     |
 
 
+# ⚡ 4-Bit ALU Step-by-Step Simulator
+
+## 🚀 LIVE WEBSITE
+
+### 👉 [CLICK HERE TO OPEN THE 4-BIT ALU SIMULATOR](https://jayakarthick-2007.github.io/4-bit-ALU-Simulator/)
+
+---
+
+An interactive 4-bit Arithmetic Logic Unit (ALU) Simulator developed as a Computer Organization and Architecture project.
+
+
 
