@@ -1,0 +1,1229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+
+<title>4-Bit ALU Learning Simulator</title>
+
+<style>
+
+*{
+    box-sizing:border-box;
+}
+
+:root{
+    padding-top:env(safe-area-inset-top,0px);
+    padding-bottom:env(safe-area-inset-bottom,0px);
+}
+
+html{
+    scroll-padding-top:env(safe-area-inset-top,0px);
+}
+
+body{
+    margin:0;
+    font-family:Arial,Helvetica,sans-serif;
+    background:#0b1020;
+    color:#f5f7ff;
+}
+
+.header{
+    text-align:center;
+    padding:28px 15px;
+    background:linear-gradient(135deg,#111936,#1d2b59);
+    border-bottom:1px solid #34406d;
+}
+
+.header h1{
+    margin:0;
+    font-size:32px;
+    letter-spacing:1px;
+}
+
+.header p{
+    margin:8px 0 0;
+    color:#bdc7e8;
+}
+
+.container{
+    width:min(1150px,94%);
+    margin:25px auto 50px;
+}
+
+.card{
+    background:#121932;
+    border:1px solid #2c3864;
+    border-radius:18px;
+    padding:22px;
+    margin-bottom:20px;
+    box-shadow:0 12px 35px rgba(0,0,0,.25);
+}
+
+.card h2{
+    margin-top:0;
+    color:#dce4ff;
+}
+
+/* INPUTS */
+
+.inputs{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:25px;
+}
+
+.input-title{
+    font-weight:bold;
+    margin-bottom:10px;
+    color:#c8d2f5;
+}
+
+.bits{
+    display:flex;
+    gap:9px;
+}
+
+.bit{
+    width:60px;
+    height:60px;
+
+    background:#080d1c;
+    color:white;
+
+    border:2px solid #46558c;
+    border-radius:12px;
+
+    text-align:center;
+
+    font-size:26px;
+    font-weight:bold;
+
+    outline:none;
+}
+
+.bit:focus{
+    border-color:#91a6ff;
+    box-shadow:0 0 0 3px rgba(145,166,255,.15);
+}
+
+.decimal{
+    margin-top:10px;
+    color:#aeb9df;
+}
+
+/* OPERATIONS */
+
+.operations{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:12px;
+}
+
+.op-btn{
+    padding:15px;
+
+    background:#192341;
+    color:white;
+
+    border:1px solid #46558c;
+    border-radius:12px;
+
+    font-size:15px;
+    font-weight:bold;
+
+    cursor:pointer;
+
+    transition:.2s;
+}
+
+.op-btn:hover{
+    background:#273660;
+}
+
+.op-btn.active{
+    background:#3b4f99;
+    border-color:#9aabff;
+}
+
+/* OPERATION DISPLAY */
+
+.operation-name{
+    text-align:center;
+    font-size:25px;
+    font-weight:bold;
+    margin-bottom:20px;
+}
+
+.binary-display{
+    font-family:Consolas,monospace;
+
+    background:#080d1c;
+
+    border:2px solid #4e63a5;
+
+    border-radius:15px;
+
+    padding:25px;
+
+    text-align:center;
+
+    font-size:28px;
+
+    line-height:1.8;
+
+    overflow-x:auto;
+}
+
+.binary-display .answer{
+    color:#aebcff;
+    font-weight:bold;
+}
+
+/* STEP */
+
+.step-controls{
+    display:flex;
+    justify-content:center;
+    gap:12px;
+    margin-top:20px;
+    flex-wrap:wrap;
+}
+
+.control-btn{
+    padding:12px 22px;
+
+    border:none;
+
+    border-radius:10px;
+
+    background:#344b91;
+
+    color:white;
+
+    font-weight:bold;
+
+    cursor:pointer;
+}
+
+.control-btn:hover{
+    background:#4661b1;
+}
+
+.reset-btn{
+    background:#26314f;
+}
+
+/* STEP INFO */
+
+.step-info{
+    margin-top:20px;
+
+    padding:18px;
+
+    background:#0c1429;
+
+    border:1px solid #2c3962;
+
+    border-radius:12px;
+
+    min-height:100px;
+}
+
+.step-number{
+    color:#aebcff;
+    font-weight:bold;
+    margin-bottom:8px;
+}
+
+.step-description{
+    color:#c5cee9;
+    line-height:1.6;
+}
+
+/* RESULT */
+
+.result-box{
+    text-align:center;
+}
+
+.final-result{
+    font-family:Consolas,monospace;
+
+    font-size:45px;
+
+    font-weight:bold;
+
+    letter-spacing:8px;
+
+    padding:20px;
+
+    margin:15px auto;
+
+    max-width:500px;
+
+    background:#080d1c;
+
+    border:2px solid #5267aa;
+
+    border-radius:15px;
+}
+
+.decimal-result{
+    color:#b9c3e5;
+}
+
+/* CARRY */
+
+.carry-box{
+    margin-top:18px;
+
+    padding:15px;
+
+    background:#0d1428;
+
+    border:1px solid #303e69;
+
+    border-radius:12px;
+
+    font-family:Consolas,monospace;
+
+    font-size:18px;
+}
+
+/* EXPLANATION */
+
+.explanation{
+    line-height:1.7;
+    color:#bdc7e6;
+}
+
+.explanation strong{
+    color:#e4eaff;
+}
+
+/* RESPONSIVE */
+
+@media(max-width:800px){
+
+    .inputs{
+        grid-template-columns:1fr;
+    }
+
+    .operations{
+        grid-template-columns:repeat(2,1fr);
+    }
+
+}
+
+@media(max-width:500px){
+
+    .bit{
+        width:48px;
+        height:50px;
+    }
+
+    .binary-display{
+        font-size:20px;
+    }
+
+    .final-result{
+        font-size:32px;
+    }
+
+}
+
+</style>
+</head>
+
+
+<body>
+
+
+<header class="header">
+
+<h1>⚡ 4-BIT ALU LEARNING SIMULATOR</h1>
+
+<p>
+Step-by-step Arithmetic and Logic Operations
+</p>
+
+</header>
+
+
+<main class="container">
+
+
+<!-- INPUT SECTION -->
+
+<section class="card">
+
+<h2>1. Enter Two 4-Bit Numbers</h2>
+
+
+<div class="inputs">
+
+
+<div>
+
+<div class="input-title">
+INPUT A
+</div>
+
+<div class="bits" id="inputA">
+
+<input class="bit" maxlength="1" inputmode="numeric" value="1">
+<input class="bit" maxlength="1" inputmode="numeric" value="1">
+<input class="bit" maxlength="1" inputmode="numeric" value="0">
+<input class="bit" maxlength="1" inputmode="numeric" value="1">
+
+</div>
+
+<div class="decimal">
+Decimal = <b id="decimalA">13</b>
+</div>
+
+</div>
+
+
+
+<div>
+
+<div class="input-title">
+INPUT B
+</div>
+
+<div class="bits" id="inputB">
+
+<input class="bit" maxlength="1" inputmode="numeric" value="0">
+<input class="bit" maxlength="1" inputmode="numeric" value="1">
+<input class="bit" maxlength="1" inputmode="numeric" value="1">
+<input class="bit" maxlength="1" inputmode="numeric" value="1">
+
+</div>
+
+<div class="decimal">
+Decimal = <b id="decimalB">7</b>
+</div>
+
+</div>
+
+
+</div>
+
+</section>
+
+
+
+<!-- OPERATION -->
+
+<section class="card">
+
+<h2>2. Select Operation</h2>
+
+
+<div class="operations">
+
+<button class="op-btn active" data-op="ADD">
+ADD
+</button>
+
+<button class="op-btn" data-op="SUB">
+SUB
+</button>
+
+<button class="op-btn" data-op="MUL">
+MULTIPLY
+</button>
+
+<button class="op-btn" data-op="AND">
+AND
+</button>
+
+<button class="op-btn" data-op="OR">
+OR
+</button>
+
+<button class="op-btn" data-op="XOR">
+XOR
+</button>
+
+<button class="op-btn" data-op="NAND">
+NAND
+</button>
+
+<button class="op-btn" data-op="NOR">
+NOR
+</button>
+
+<button class="op-btn" data-op="XNOR">
+XNOR
+</button>
+
+</div>
+
+</section>
+
+
+
+<!-- OPERATION -->
+
+<section class="card">
+
+<div class="operation-name" id="operationName">
+ADD
+</div>
+
+
+<div class="binary-display" id="binaryDisplay">
+
+1101<br>
+
++ 0111
+
+<hr>
+
+<span class="answer">
+0000
+</span>
+
+</div>
+
+
+<div class="step-controls">
+
+<button class="control-btn" id="nextBtn">
+▶ NEXT STEP
+</button>
+
+<button class="control-btn" id="allBtn">
+▶ SHOW ALL STEPS
+</button>
+
+<button class="control-btn reset-btn" id="resetBtn">
+↻ RESET
+</button>
+
+</div>
+
+
+<div class="step-info">
+
+<div class="step-number" id="stepNumber">
+Ready
+</div>
+
+<div class="step-description" id="stepDescription">
+Select an operation and press NEXT STEP to see how the ALU performs the calculation.
+</div>
+
+</div>
+
+</section>
+
+
+
+<!-- RESULT -->
+
+<section class="card result-box">
+
+<h2>Final Result</h2>
+
+
+<div class="final-result" id="finalResult">
+----
+</div>
+
+
+<div class="decimal-result">
+
+Decimal Result:
+<b id="finalDecimal">----</b>
+
+</div>
+
+
+<div class="carry-box">
+
+Carry / Borrow:
+<span id="carryResult">
+----
+</span>
+
+</div>
+
+</section>
+
+
+
+<!-- EXPLANATION -->
+
+<section class="card">
+
+<h2>How the ALU Works</h2>
+
+<div class="explanation">
+
+<p>
+<strong>ADD:</strong>
+The ALU adds the two 4-bit numbers starting from the least significant bit.
+Each bit produces a result bit and may generate a carry for the next bit.
+</p>
+
+<p>
+<strong>SUB:</strong>
+Subtraction is performed using the two's-complement method.
+The second number is complemented and then added to the first number.
+</p>
+
+<p>
+<strong>MULTIPLY:</strong>
+Binary multiplication generates partial products depending on each bit of the multiplier.
+The partial products are shifted and added.
+</p>
+
+<p>
+<strong>AND:</strong>
+The output bit is 1 only when both input bits are 1.
+</p>
+
+<p>
+<strong>OR:</strong>
+The output bit is 1 when at least one input bit is 1.
+</p>
+
+<p>
+<strong>XOR:</strong>
+The output bit is 1 when the input bits are different.
+</p>
+
+<p>
+<strong>NAND:</strong>
+NAND is the complement of AND.
+</p>
+
+<p>
+<strong>NOR:</strong>
+NOR is the complement of OR.
+</p>
+
+<p>
+<strong>XNOR:</strong>
+XNOR is the complement of XOR. The output is 1 when both input bits are equal.
+</p>
+
+</div>
+
+</section>
+
+
+</main>
+
+
+
+<script>
+
+
+let selectedOperation = "ADD";
+
+let currentStep = 0;
+
+let steps = [];
+
+let finalResult = 0;
+
+let carryInfo = "";
+
+
+
+const inputA =
+document.querySelectorAll("#inputA .bit");
+
+const inputB =
+document.querySelectorAll("#inputB .bit");
+
+
+
+/* GET BINARY */
+
+function getBinary(inputs){
+
+    return Array.from(inputs)
+        .map(x => x.value === "1" ? "1" : "0")
+        .join("");
+
+}
+
+
+
+/* CONVERT */
+
+function decimal(binary){
+
+    return parseInt(binary,2);
+
+}
+
+
+
+function fourBit(number){
+
+    return (number & 15)
+        .toString(2)
+        .padStart(4,"0");
+
+}
+
+
+
+/* UPDATE DECIMAL READOUTS FOR A AND B */
+
+function updateInputDecimals(){
+
+    document.getElementById("decimalA")
+    .textContent = decimal(getBinary(inputA));
+
+    document.getElementById("decimalB")
+    .textContent = decimal(getBinary(inputB));
+
+}
+
+
+
+/* CREATE STEPS */
+
+function createSteps(){
+
+    steps = [];
+
+    currentStep = 0;
+
+    carryInfo = "";
+
+    const A =
+    getBinary(inputA);
+
+    const B =
+    getBinary(inputB);
+
+    const a =
+    decimal(A);
+
+    const b =
+    decimal(B);
+
+
+
+    /* ADD */
+
+    if(selectedOperation === "ADD"){
+
+        let carry = 0;
+
+        let result = "";
+
+        for(let i=3;i>=0;i--){
+
+            const bitA =
+            Number(A[i]);
+
+            const bitB =
+            Number(B[i]);
+
+            const sum =
+            bitA + bitB + carry;
+
+            const resultBit =
+            sum % 2;
+
+            const newCarry =
+            Math.floor(sum/2);
+
+            result =
+            resultBit + result;
+
+            steps.push(
+            "Bit "+(4-i)+": "+
+            bitA+" + "+bitB+
+            " + carry "+carry+
+            " = "+sum+
+            ". Result bit = "+
+            resultBit+
+            ", next carry = "+
+            newCarry
+            );
+
+            carry = newCarry;
+
+        }
+
+        finalResult =
+        (a+b)&15;
+
+        carryInfo =
+        "Final Carry = "+carry;
+
+    }
+
+
+
+    /* SUB */
+
+    else if(selectedOperation === "SUB"){
+
+        let borrow = 0;
+
+        let result = "";
+
+        for(let i=3;i>=0;i--){
+
+            let bitA =
+            Number(A[i]);
+
+            let bitB =
+            Number(B[i]);
+
+            let value =
+            bitA - bitB - borrow;
+
+            let newBorrow = 0;
+
+            if(value < 0){
+
+                value += 2;
+
+                newBorrow = 1;
+
+            }
+
+            result =
+            value + result;
+
+            steps.push(
+            "Bit "+(4-i)+": "+
+            bitA+" − "+bitB+
+            " − borrow "+borrow+
+            " = "+value+
+            ". Result bit = "+
+            value+
+            ", next borrow = "+
+            newBorrow
+            );
+
+            borrow =
+            newBorrow;
+
+        }
+
+        finalResult =
+        (a-b)&15;
+
+        carryInfo =
+        "Final Borrow = "+borrow;
+
+    }
+
+
+
+    /* MULTIPLY */
+
+    else if(selectedOperation === "MUL"){
+
+        let running = 0;
+
+        for(let i=3;i>=0;i--){
+
+            const bit =
+            Number(B[i]);
+
+            if(bit === 1){
+
+                const partial =
+                a << (3-i);
+
+                running += partial;
+
+                steps.push(
+                "Multiplier bit "+(4-i)+
+                " = 1 → Partial product = "+
+                fourBit(partial)+
+                " → Running total = "+
+                running
+                );
+
+            }else{
+
+                steps.push(
+                "Multiplier bit "+(4-i)+
+                " = 0 → Partial product = 0000"
+                );
+
+            }
+
+        }
+
+        finalResult =
+        (a*b)&15;
+
+        carryInfo =
+        "Full product = "+(a*b)+
+        " | Lower 4 bits shown";
+
+    }
+
+
+
+    /* LOGIC OPERATIONS */
+
+    else{
+
+        let result = "";
+
+        for(let i=0;i<4;i++){
+
+            let x =
+            Number(A[i]);
+
+            let y =
+            Number(B[i]);
+
+            let r = 0;
+
+            if(selectedOperation==="AND")
+                r = x & y;
+
+            if(selectedOperation==="OR")
+                r = x | y;
+
+            if(selectedOperation==="XOR")
+                r = x ^ y;
+
+            if(selectedOperation==="NAND")
+                r = 1-(x&y);
+
+            if(selectedOperation==="NOR")
+                r = 1-(x|y);
+
+            if(selectedOperation==="XNOR")
+                r = 1-(x^y);
+
+            result += r;
+
+            steps.push(
+            "Bit "+(i+1)+": "+
+            x+" "+selectedOperation+
+            " "+y+
+            " = "+r
+            );
+
+        }
+
+        finalResult =
+        parseInt(result,2);
+
+        carryInfo =
+        "Carry = Not applicable";
+
+    }
+
+}
+
+
+
+/* DISPLAY STEP */
+
+function showStep(){
+
+    if(currentStep >= steps.length){
+
+        showFinal();
+
+        return;
+
+    }
+
+
+    document.getElementById("stepNumber")
+    .textContent =
+    "STEP "+(currentStep+1)+" / "+steps.length;
+
+
+    document.getElementById("stepDescription")
+    .textContent =
+    steps[currentStep];
+
+
+    currentStep++;
+
+
+    updateOperationDisplay();
+
+}
+
+
+
+/* SHOW FINAL */
+
+function showFinal(){
+
+    document.getElementById("finalResult")
+    .textContent =
+    fourBit(finalResult);
+
+
+    document.getElementById("finalDecimal")
+    .textContent =
+    finalResult;
+
+
+    document.getElementById("carryResult")
+    .textContent =
+    carryInfo;
+
+
+    document.getElementById("stepNumber")
+    .textContent =
+    "✓ OPERATION COMPLETE";
+
+
+    document.getElementById("stepDescription")
+    .textContent =
+    "All calculation steps have been completed.";
+
+    updateOperationDisplay();
+
+}
+
+
+
+/* OPERATION DISPLAY */
+
+function updateOperationDisplay(){
+
+    const A =
+    getBinary(inputA);
+
+    const B =
+    getBinary(inputB);
+
+
+    let symbol = "+";
+
+
+    if(selectedOperation==="SUB")
+        symbol="−";
+
+    if(selectedOperation==="MUL")
+        symbol="×";
+
+    if(selectedOperation==="AND")
+        symbol="AND";
+
+    if(selectedOperation==="OR")
+        symbol="OR";
+
+    if(selectedOperation==="XOR")
+        symbol="XOR";
+
+    if(selectedOperation==="NAND")
+        symbol="NAND";
+
+    if(selectedOperation==="NOR")
+        symbol="NOR";
+
+    if(selectedOperation==="XNOR")
+        symbol="XNOR";
+
+
+    document.getElementById("operationName")
+    .textContent =
+    selectedOperation==="MUL"
+    ? "MULTIPLY"
+    : selectedOperation;
+
+
+    document.getElementById("binaryDisplay")
+    .innerHTML =
+    A+
+    "<br>"+
+    symbol+
+    " "+B+
+    "<hr>"+
+    '<span class="answer">'+
+    (currentStep>=steps.length
+    ? fourBit(finalResult)
+    : "????")+
+    "</span>";
+
+}
+
+
+
+/* INPUT EVENTS */
+
+function setupInput(inputs){
+
+    inputs.forEach((input,index)=>{
+
+        input.addEventListener("input",()=>{
+
+            input.value =
+            input.value
+            .replace(/[^01]/g,"")
+            .slice(-1);
+
+            updateInputDecimals();
+
+            createSteps();
+
+            resetDisplay();
+
+            if(input.value &&
+            index<inputs.length-1){
+
+                inputs[index+1].focus();
+
+            }
+
+        });
+
+    });
+
+}
+
+
+
+/* RESET DISPLAY */
+
+function resetDisplay(){
+
+    currentStep = 0;
+
+    document.getElementById("finalResult")
+    .textContent="----";
+
+    document.getElementById("finalDecimal")
+    .textContent="----";
+
+    document.getElementById("carryResult")
+    .textContent="----";
+
+    document.getElementById("stepNumber")
+    .textContent="Ready";
+
+    document.getElementById("stepDescription")
+    .textContent=
+    "Press NEXT STEP to begin the operation.";
+
+    updateOperationDisplay();
+
+}
+
+
+
+/* OPERATION BUTTONS */
+
+document.querySelectorAll(".op-btn")
+.forEach(button=>{
+
+    button.addEventListener("click",()=>{
+
+        document.querySelectorAll(".op-btn")
+        .forEach(b =>
+        b.classList.remove("active")
+        );
+
+        button.classList.add("active");
+
+        selectedOperation =
+        button.dataset.op;
+
+        createSteps();
+
+        resetDisplay();
+
+    });
+
+});
+
+
+
+/* NEXT STEP */
+
+document.getElementById("nextBtn")
+.addEventListener("click",()=>{
+
+    showStep();
+
+});
+
+
+
+/* SHOW ALL */
+
+document.getElementById("allBtn")
+.addEventListener("click",()=>{
+
+    while(currentStep < steps.length){
+
+        currentStep++;
+
+    }
+
+    showFinal();
+
+});
+
+
+
+/* RESET */
+
+document.getElementById("resetBtn")
+.addEventListener("click",()=>{
+
+    inputA[0].value="1";
+    inputA[1].value="1";
+    inputA[2].value="0";
+    inputA[3].value="1";
+
+    inputB[0].value="0";
+    inputB[1].value="1";
+    inputB[2].value="1";
+    inputB[3].value="1";
+
+    selectedOperation="ADD";
+
+    document.querySelectorAll(".op-btn")
+    .forEach(b =>
+    b.classList.remove("active")
+    );
+
+    document.querySelector('[data-op="ADD"]')
+    .classList.add("active");
+
+    updateInputDecimals();
+
+    createSteps();
+
+    resetDisplay();
+
+});
+
+
+
+/* START */
+
+setupInput(inputA);
+
+setupInput(inputB);
+
+updateInputDecimals();
+
+createSteps();
+
+resetDisplay();
+
+</script>
+
+</body>
+</html>
