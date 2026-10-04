@@ -85,9 +85,12 @@ with a final carry of:
 
 This project demonstrates the working principles of an Arithmetic Logic Unit using an interactive browser-based simulator.
 
-## 👩‍💻 Author
+## 👥 Team Members
 
-**Your Name**
+| S.No. | Team Member        |
+| ----: | ------------------ |
+|     1 | **JAYAKARTHICK A** |
+|     2 | **SIVAGURU N**     |
 
-B.Tech ECE
+
 
